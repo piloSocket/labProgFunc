@@ -1,0 +1,42 @@
+{ "nombre" : "Haskell",
+  "apellido" : "Curry",
+  "CI" : 12345678,
+  "cursos" :
+  [ { "nombre"   : "Calculo DIV",
+      "codigo"   : 123,
+      "anio"      : 2019,
+      "semestre" : 1,
+      "nota"     : 1
+    },
+    { "nombre"   : "Calculo DIV",
+      "codigo"   : 123,
+      "anio"      : 2019,
+      "semestre" : 2,
+      "nota"     : 7
+    },
+    { "nombre"   : "Calculo DIVV",
+      "codigo"   : 124,
+      "anio"      : 2020,
+      "semestre" : 1,
+      "nota"     : 8
+    },
+    { "nombre"   : "Programación 1",
+      "codigo"   : 130,
+      "anio"      : 2019,
+      "semestre" : 2,
+      "nota"     : 10
+    },
+    { "nombre"   : "Programación 2",
+      "codigo"   : 130,
+      "anio"      : 2020,
+      "semestre" : 1,
+      "nota"     : 0
+    },
+    { "nombre"   : "Programación 2",
+      "codigo"   : 130,
+      "anio"      : 2021,
+      "semestre" : 1,
+      "nota"     : 12
+    }
+    ]
+}
