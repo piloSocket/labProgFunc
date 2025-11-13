@@ -10,8 +10,7 @@ import AST
 import JSONLibrary
 import Control.Monad
 import Data.List
-import Data.Maybe (isJust)
-import Data.Maybe(fromJust)
+import Data.Maybe (isJust,fromJust)
 
 
 -- Tipos JSON
@@ -30,10 +29,10 @@ data JSONType
 typeOf :: JSON -> Maybe JSONType
 typeOf (JBoolean b) = Just TyBool
 typeOf (JNumber n) = Just TyNum
-typeOf (JNull) = Just TyNull
+typeOf JNull = Just TyNull
 typeOf (JString s) = Just TyString
 typeOf (JArray []) = Nothing
-typeOf (JArray xs) = let mts = map typeOf (xs)
+typeOf (JArray xs) = let mts = map typeOf xs
                         in if all isJust mts
                             then let ts = map fromJust mts
                                 in if all (== head ts) ts
@@ -66,10 +65,22 @@ typeWf TyBool = True
 typeWf TyNull = True
 typeWf TyNum = True
 typeWf TyString = True
---typeWf TyObject o = if objectWf o && 
-
-
+typeWf (TyObject o) = let keys = map fst o 
+                      in length keys == length (nub keys) && keys == sort keys && all (\(_,t)->typeWf t) o 
+typeWf (TyArray t) = typeWf t
+                      
 
 -- dado un valor JSON v, y un tipo t, decide si v tiene tipo t.
 hasType :: JSON -> JSONType -> Bool
-hasType = undefined
+hasType (JString s) TyString = True
+hasType (JBoolean _) TyBool = True
+hasType JNull TyNull = True
+hasType (JNumber _) TyNum = True
+hasType (JObject o) (TyObject r) = 
+                                  let keys = map fst o 
+                                      keysr = map fst r 
+                                  in keys == keysr && all (\(k,v) ->
+                                        case lookup k r of
+                                            Just tv -> hasType v tv
+                                            Nothing -> False
+                                        ) o
