@@ -1,6 +1,6 @@
 {- Grupo: X
    Integrante(s):
-     Apellido, Nombre, XXXXXXXX
+     Piloni, Francisco, 5.394.835-6
      Apellido, Nombre, XXXXXXXX
 -}
 
@@ -67,20 +67,20 @@ entriesOf (x:xs) = x:xs
 -- repetidas en ambos objetos, en la unión tienen prioridad los
 -- campos del primer objeto.
 leftJoin :: Object a -> Object a -> Object a
-leftJoin [] [] = []
-leftJoin [] (x:xs) = x:xs
-leftJoin (x:xs) [] = x:xs
-leftJoin (x:xs) (y:ys) = if elem (fst y) (map fst (x:xs)) then leftJoin (x:xs) ys
-                        else leftJoin (y:x:xs) ys
+leftJoin o1 [] = o1
+leftJoin o1 ((k,v):o2) =
+  if k `elem` map fst o1
+     then leftJoin o1 o2
+     else leftJoin (o1 ++ [(k,v)]) o2
+
 -- Se combinan dos objetos, en orden.  En caso que haya claves
 -- repetidas en ambos objetos, en la unión tienen prioridad los
 -- campos del segundo objeto.
 rightJoin :: Object a -> Object a -> Object a
-rightJoin [] [] = []
-rightJoin [] (y:ys) = y:ys
-rightJoin (x:xs) [] = x:xs
-rightJoin (x:xs) (y:ys) = if elem (fst x) (map fst (y:ys)) then rightJoin xs (y:ys)
-                          else rightJoin xs (x:y:ys)
+rightJoin o1 o2 =
+  [ (k,v) | (k,v) <- o1, k `notElem` map fst o2 ] ++ o2
+
+
 
 -- Dado un predicado sobre objetos JSON, y un arreglo, construye el
 -- arreglo con los elementos que satisfacen el predicado.

@@ -1,6 +1,6 @@
 {- Grupo: X
    Integrante(s):
-     Apellido, Nombre, XXXXXXXX
+     Piloni, Francisco, 5.394.835-6
      Apellido, Nombre, XXXXXXXX
 -}
 
@@ -54,7 +54,7 @@ typeOf (JObject xs) =
 -- decide si las claves de un objeto están ordenadas
 -- lexicográficamente y no se repiten.
 objectWf :: Object JSONType -> Bool
-objectWf [] = True
+objectWf [] = False
 objectWf (x:xs) = if sortKeys (x:xs) == x:xs then True
                   else False
 
@@ -65,22 +65,16 @@ typeWf TyBool = True
 typeWf TyNull = True
 typeWf TyNum = True
 typeWf TyString = True
+typeWf (TyObject []) = False
 typeWf (TyObject o) = let keys = map fst o 
                       in length keys == length (nub keys) && keys == sort keys && all (\(_,t)->typeWf t) o 
 typeWf (TyArray t) = typeWf t
+
                       
 
 -- dado un valor JSON v, y un tipo t, decide si v tiene tipo t.
 hasType :: JSON -> JSONType -> Bool
-hasType (JString s) TyString = True
-hasType (JBoolean _) TyBool = True
-hasType JNull TyNull = True
-hasType (JNumber _) TyNum = True
-hasType (JObject o) (TyObject r) = 
-                                  let keys = map fst o 
-                                      keysr = map fst r 
-                                  in keys == keysr && all (\(k,v) ->
-                                        case lookup k r of
-                                            Just tv -> hasType v tv
-                                            Nothing -> False
-                                        ) o
+hasType a s = 
+              case typeOf a of 
+                (Just jt)-> jt == s
+                Nothing-> False
