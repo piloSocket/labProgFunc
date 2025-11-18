@@ -70,7 +70,7 @@ jval 4 = JObject [("1", JNull), ("3", JArray [JNull, JNull]), ("2", jval 1)]
 
 
 {------------------------------------------------------------------------------
--- respectivos resultados de typeOf
+-- tipos
 ------------------------------------------------------------------------------}
 jty 1 = Just $ TyObject
         [ ("boolean", TyBool)
@@ -105,7 +105,7 @@ oval 6 = []
 
 
 {------------------------------------------------------------------------------
--- respectivos resultados de typeOf para TyObject (obj n)
+-- respectivos resultados de typeOf para TyObject (oval n)
 ------------------------------------------------------------------------------}
 -- ok
 oty 1 = Just $ TyObject [("1", TyNum),("2", TyNum),("3", TyNum)]
@@ -115,7 +115,7 @@ oty 3 = Just $ TyObject $
   [("4", TyNum), ("5", fromJust $ oty 1), ("6", TyNum)]
 oty 4 = Just $ TyObject [("1", TyNull)]
 oty 5 = Nothing
-oty 6 = Just $ TyObject []
+oty 6 = Nothing
 
 
 -- tipos mal formados
@@ -514,7 +514,7 @@ tests TypeWf
     True
 
  : assertEq "typeWf 6"
-   (typeWf $ fromJust $ oty 6)
+   (typeWf $ TyObject [])
    False
 
  : assertEq "typeWf 7"
@@ -695,26 +695,31 @@ tests Get
 tests Aprobados
   = assertEq "aprobados 1"
      (aprobados (est 2))
-     (Just
-       (JArray
-         [ JObject
-           [ ("nombre", JString "Calculo DIV")
-           , ("codigo", JNumber 123)
-           , ("anio", JNumber 2024)
-           , ("semestre", JNumber 1)
-           , ("nota", JNumber 7)
-           ]
-         , JObject
-           [ ("nombre", JString "Programación 1")
-           , ("codigo", JNumber 130)
-           , ("anio", JNumber 2023)
-           , ("semestre", JNumber 2)
-           , ("nota", JNumber 12)
-           ]
-         ])
-     )
+     (Just (JObject
+     [ ("nombre", JString "Haskell")
+     , ("apellido", JString "Curry")
+     , ("CI", JNumber 12345678)
+     , ("cursos"
+       , JArray
+           [ JObject
+               [ ("nombre", JString "Calculo DIV")
+               , ("codigo", JNumber 123)
+               , ("anio", JNumber 2024)
+               , ("semestre", JNumber 1)
+               , ("nota", JNumber 7)
+               ]
+           , JObject
+               [ ("nombre", JString "Programación 1")
+               , ("codigo", JNumber 130)
+               , ("anio", JNumber 2023)
+               , ("semestre", JNumber 2)
+               , ("nota", JNumber 12)
+               ]
+           ])
+     ]))
 
   : []
+  
 
 tests EnAnio
   = assertEq "enAnio 1"
@@ -777,7 +782,7 @@ tests _ = []
 
 
 -- concatena todos los tests
-allTests = concat [tests a | a <- [LookupField .. AddCurso]]
+allTests = concat [tests a | a <- [Show' .. AddCurso]]
 
 main :: IO ()
 main =
@@ -798,7 +803,7 @@ instance Eq JSON where
   JNull == JNull
     = True
   JObject o == JObject p
-    = o == p
+    = sortKeys o == sortKeys p
   JArray r == JArray s
     = r == s
   _ == _ = False

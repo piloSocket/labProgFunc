@@ -120,19 +120,25 @@ getCursos e = if estaBienFormadoEstudiante e then lookupField e "cursos" else No
 -- obtiene arreglo con cursos que fueron aprobados
 aprobados :: JSON -> Maybe JSON
 aprobados e =
-  case getCursos e of
+  case fromJObject e of
     Nothing -> Nothing
-    Just cursosJSON ->
-      case fromJArray cursosJSON of        
-        Nothing -> Nothing                 
+    Just obj ->
+      case lookupFieldObj obj "cursos" >>= fromJArray of
+        Nothing -> Nothing
         Just cursos ->
-          let aprobados = filterArray
-                (\c ->
-                  case lookupField c "nota" >>= fromJNumber of
-                    Just n  -> n > 2
-                    Nothing -> False
-                ) cursos
-          in Just (mkJArray aprobados)
+          let filtrados =
+                filterArray
+                  (\c -> case lookupField c "nota" >>= fromJNumber of
+                           Just n  -> n > 2
+                           Nothing -> False
+                  ) cursos
+
+              nuevoCursos = ("cursos", mkJArray filtrados)
+
+              reconstruido =
+                map (\(k,v) -> if k == "cursos" then nuevoCursos else (k,v)) obj
+          in Just (mkJObject reconstruido)
+
 
 -- obtiene arreglo con cursos rendidos en un año dado
 enAnio :: Integer -> JSON -> Maybe JSON
